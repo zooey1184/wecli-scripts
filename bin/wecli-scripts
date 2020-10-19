@@ -1,0 +1,47 @@
+#!/usr/bin/env node
+const commander = require('commander')
+const log = require('@zooey1184/log')
+
+const mini = require('minimist')
+const argvs = mini(process.argv)
+const packageJson = require('../package.json');
+const Serve = require('../scripts/start')
+
+let actionType = ''
+const program = new commander.Command(packageJson.name)
+  .version(packageJson.version)
+  .arguments('<action-type>')
+  .usage(`${log.success(`{{<action-type>}} [options]`)}`)
+  .action(type => {
+    actionType = type;
+  })
+  .allowUnknownOption()
+  .on('--help', () => {
+    log.success(`   Only {{<action-type>}} is required, 
+    this is script params exp: wecli-script start || wecli-script build`)
+  })
+  .parse(process.argv);
+
+console.log(actionType, argvs, argvs.p, argvs.e);
+
+const obj = {}
+if (argvs && (argvs.p || argvs.e)) {
+  if (argvs.p) {
+    const params = argvs.p.split(',').filter(item => !!item)
+    obj.p = params
+  }
+  if (argvs.e) {
+    obj.e = argvs.e
+  }
+}
+const server = new Serve(obj)
+if (actionType === 'start' || actionType === 'build') {
+  server.start()
+  server.cli(`npm run ${actionType}`)
+} else {
+  server.start()
+  server.cli(`vue-cli-service ${actionType}`)
+}
+
+console.log(server.start());
+// server.start()
