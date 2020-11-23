@@ -29,8 +29,15 @@ if (_argvs && _argvs.length) {
     if (item.match(/\=/)) {
       const [k,v] = item.split('=')
       query[k] = v
+    } else {
+      query[item] = true
     }
   })
+}
+for(const i in argvs) {
+  if (i !== '_') {
+    query[i] = argvs[i]
+  }
 }
 
 const obj = {}
@@ -47,6 +54,16 @@ const server = new Serve(obj)
 const entryMap = server.start()
 if (actionType === 'start') {
   server.cli(`vue-cli-service serve`, entryMap)
+} else {
+  let str = ''
+  for(const i in query) {
+    if (i !== 'p' && i!=='e') {
+      if (typeof query[i] === 'boolean' && query[i] === true) {
+        str += ` --${i}`
+      } else {
+        str += ` --${i}=${query[i]}`
+      }
+    }
+  }
+  server.cli(`vue-cli-service ${actionType} ${str}`, entryMap)
 }
-
-server.cli(`vue-cli-service ${actionType}`, entryMap)

@@ -37,5 +37,5 @@ module.exports = {
 }
 
 npm run start -- p=demo,demo2 e=daily
-
+npm run build -- p=demo --report
 ```
