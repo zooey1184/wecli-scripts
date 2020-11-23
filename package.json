@@ -1,16 +1,16 @@
 {
   "name": "wecli-scripts",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "wecli script vue",
   "main": "index.js",
   "author": "zooey1184",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "scripts": {
-    "start": "node ./scripts/test"
+    "start": "node ./scripts/start"
   },
   "bin": {
-    "wecli-script": "./bin/wecli-scripts"
+    "wecli-scripts": "./bin/wecli-scripts"
   },
   "dependencies": {
     "@zooey1184/log": "^1.0.4",

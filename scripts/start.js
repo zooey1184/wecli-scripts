@@ -15,7 +15,7 @@ class Serve {
     this.pages = params.p || entry.pages || getDir(baseURL)
     this.baseUrl = entry.baseUrl || baseURL
     this._createMap = entry.map && entry.map.useMap
-    this.deep = entry.deep || 3
+    this.deep = entry.deep || 1
     this.entryMap = {}
   }
   cli(name, envEntryMap) {

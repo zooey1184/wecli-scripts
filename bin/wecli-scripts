@@ -22,26 +22,31 @@ const program = new commander.Command(packageJson.name)
   })
   .parse(process.argv);
 
-console.log(actionType, argvs, argvs.p, argvs.e);
+const [n, r, s, ..._argvs] = argvs._
+const query = {}
+if (_argvs && _argvs.length) {
+  _argvs.forEach(item => {
+    if (item.match(/\=/)) {
+      const [k,v] = item.split('=')
+      query[k] = v
+    }
+  })
+}
 
 const obj = {}
-if (argvs && (argvs.p || argvs.e)) {
-  if (argvs.p) {
-    const params = argvs.p.split(',').filter(item => !!item)
+if (argvs && (query.p || query.e)) {
+  if (query.p) {
+    const params = query.p.split(',').filter(item => !!item)
     obj.p = params
   }
-  if (argvs.e) {
-    obj.e = argvs.e
+  if (query.e) {
+    obj.e = query.e
   }
 }
 const server = new Serve(obj)
-if (actionType === 'start' || actionType === 'build') {
-  server.start()
-  server.cli(`npm run ${actionType}`)
-} else {
-  server.start()
-  server.cli(`vue-cli-service ${actionType}`)
+const entryMap = server.start()
+if (actionType === 'start') {
+  server.cli(`vue-cli-service serve`, entryMap)
 }
 
-console.log(server.start());
-// server.start()
+server.cli(`vue-cli-service ${actionType}`, entryMap)
