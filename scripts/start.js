@@ -5,6 +5,7 @@ const getDir = require('../utils/getDir')
 const baseURL = './src/pages'
 const entryMap = require('../utils/getEntry')
 const createMap = require('../utils/createMap')
+const existFile = require('../utils/existFile')
 const CONFIG = require('../utils/getConfig')
 
 class Serve {
@@ -13,24 +14,32 @@ class Serve {
     this.entry = entry
     this.env = params.e || 'daily'
     this.pages = params.p || entry.pages || getDir(baseURL)
-    this.baseUrl = entry.baseUrl || baseURL
-    this._createMap = entry.map && entry.map.useMap
-    this.deep = entry.deep || 1
+    this.baseUrl = params.baseUrl || entry.baseUrl || baseURL
+    this._createMap = params.useMap || entry.map && entry.map.useMap
+    this.deep = params.deep || entry.deep || 1
     this.entryMap = {}
   }
   cli(name, envEntryMap) {
     const [c, ...o] = name.split(' ').filter(item => !!item)
     spawn.sync(c, o, { 
       stdio: 'inherit', 
-      env: Object.assign({}, process.env, envEntryMap) 
+      env: Object.assign({}, process.env, envEntryMap, { WECLI_ENV: this.env }) 
     });
   }
-  start() {
+  start(useLocal) {
     this.entryMap = this.createEntryMap()
     let envEntryMap = {}
     if (this._createMap) {
       const mapName = this.entry.map && this.entry.map.name ? this.entry.map.name : 'wecli.map.json'
-      createMap(this.entryMap, mapName)
+      if (useLocal) {
+        const name = `./${mapName}`
+        if (!existFile(name) || this.entry.pages) {
+          createMap(this.entryMap, mapName)
+        }
+      } else {
+        createMap(this.entryMap, mapName)
+      }
+      
     } else {
       envEntryMap = { ENTRY: JSON.stringify(this.entryMap) }
     }

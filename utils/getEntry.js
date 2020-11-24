@@ -13,6 +13,7 @@ const getPath = p => path.resolve(rootPath, p)
  * @param {*} count 遍历到几层   因为层数太多 会影响性能，所以控制
  * @param {*} list [] 入口基数
  */
+const ignore = ['.DS_Store']
 const getEntry = (props, baseUrl, count=3, list=[], headUrl) => {
   const entryList = list
   const hurl = headUrl || baseUrl
@@ -20,27 +21,29 @@ const getEntry = (props, baseUrl, count=3, list=[], headUrl) => {
     console.log(props);
     if (props && Object.prototype.toString.call(props) === '[object Array]') {
       props.forEach((item) => {
-        const itemPath = getPath(`${baseUrl}/${item}/main.js`)
-        if (existFile(`${baseUrl}/${item}/main.js`)) {
-          const ref = new RegExp(getPath(`${hurl}`))
-          const fileName = getPath(`${baseUrl}/${item}/index.html`).replace(ref, '')
-          const obj = {
-            entry: itemPath,
-            filename: fileName.replace(/^\//, '')
-          }
-          if(existFile(`${baseUrl}/${item}/index.html`)) {
-            obj.template = getPath(`${baseUrl}/${item}/index.html`)
-          }
-          entryList.push(obj)
-        } else {
-          try {
-            const folds = folderFiles(`${baseUrl}/${item}`)
-            if (folds && folds.length) {
-              getEntry(folds, `${baseUrl}/${item}`, count, entryList, hurl)
+        if (!ignore.includes(item)) {
+          const itemPath = getPath(`${baseUrl}/${item}/main.js`)
+          if (existFile(`${baseUrl}/${item}/main.js`)) {
+            const ref = new RegExp(getPath(`${hurl}`))
+            const fileName = getPath(`${baseUrl}/${item}/index.html`).replace(ref, '')
+            const obj = {
+              entry: itemPath,
+              filename: fileName.replace(/^\//, '')
             }
-          } catch (e) {
-            console.log('\n');
-            log.error('error', `{{${baseUrl}/${item}}} 这个文件或文件夹不存在入口文件\n\n`);
+            if(existFile(`${baseUrl}/${item}/index.html`)) {
+              obj.template = getPath(`${baseUrl}/${item}/index.html`)
+            }
+            entryList.push(obj)
+          } else {
+            try {
+              const folds = folderFiles(`${baseUrl}/${item}`)
+              if (folds && folds.length) {
+                getEntry(folds, `${baseUrl}/${item}`, count, entryList, hurl)
+              }
+            } catch (e) {
+              console.log('\n');
+              log.error('error', `{{${baseUrl}/${item}}} 这个文件或文件夹不存在入口文件\n\n`);
+            }
           }
         }
       });

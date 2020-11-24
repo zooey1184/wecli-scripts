@@ -11,6 +11,8 @@ function createMap(map, name = 'wecli.map.json') {
     const _map = JSON.stringify(t, null, 2)
     const _t = `module.exports = ${_map}`
     fs.writeFileSync(`${root}/${name}`, _t + os.EOL);
+  } else {
+    fs.writeFileSync(`${root}/${name}`, map + os.EOL);
   }
 }
 

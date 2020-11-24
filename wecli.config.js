@@ -8,6 +8,6 @@ module.exports = {
     // 控制遍历层级
     deep: 1,
     // 入口基础路径
-    baseUrl: './src/pages'
+    baseUrl: './src/pages',
   }
 }

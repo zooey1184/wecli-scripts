@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const commander = require('commander')
 const log = require('@zooey1184/log')
-
+const wecliConfig = require('../utils/getConfig')
 const mini = require('minimist')
 const argvs = mini(process.argv)
 const packageJson = require('../package.json');
@@ -51,7 +51,8 @@ if (argvs && (query.p || query.e)) {
   }
 }
 const server = new Serve(obj)
-const entryMap = server.start()
+const entryMap = server.start(wecliConfig.entry.useLocal || query.useLocal)
+
 if (actionType === 'start') {
   server.cli(`vue-cli-service serve`, entryMap)
 } else {
